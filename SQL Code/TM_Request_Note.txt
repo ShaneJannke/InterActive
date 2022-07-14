@@ -1,0 +1,26 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Request_Note]    Script Date: 7/14/2022 2:33:59 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 7/14/22
+-- Description:	Procedure to view/edit Request Notes by ID
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Request_Note] 
+	-- DECLARE
+	@id varchar(20)
+	,@note nvarchar(2000)
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+UPDATE Interactive.dbo.TM_REQUEST_ID_GENERATOR
+SET REQUEST_NOTE = @note
+WHERE REQUEST_ID = @id
+
+END

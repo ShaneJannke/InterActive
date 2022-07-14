@@ -1,0 +1,18 @@
+USE [Interactive]
+GO
+
+/****** Object:  Table [dbo].[TM_REQUEST_ID_GENERATOR]    Script Date: 7/14/2022 2:05:43 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[TM_REQUEST_ID_GENERATOR](
+	[REQUEST_ID] [int] IDENTITY(1,1) NOT NULL,
+	[DATE_ADDED] [varchar](20) NULL,
+	[ADDED_BY] [varchar](100) NULL,
+	[REQUEST_NOTE] [nvarchar](2000) NULL,
+	[CHANGE_LOG] [nvarchar](2000) NULL
+)
+GO

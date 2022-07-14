@@ -1,0 +1,246 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Add_Assembly]    Script Date: 7/14/2022 2:36:24 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 7/14/22
+-- Description:	Procedure to update the sub_request table with Assy Number
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Add_Assembly] 
+	-- DECLARE
+	@id varchar(20)
+	,@pcba varchar(20)
+	,@rev varchar(20)
+	,@custdate nvarchar(20)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+
+DECLARE @ErrorMessage NVARCHAR(max)
+DECLARE @ErrorSeverity INT
+DECLARE @ErrorState INT
+
+BEGIN TRY
+BEGIN TRANSACTION
+
+DECLARE @status varchar(100) = 'Open'
+
+
+	IF EXISTS (SELECT WOENTRY.WONO FROM MANEX.dbo.WOENTRY 
+	INNER JOIN MANEX.dbo.INVENTOR ipar
+	ON
+	WOENTRY.UNIQ_KEY = ipar.UNIQ_KEY
+	INNER JOIN
+		MANEX.dbo.DEPT_QTY dq
+ON
+		dq.WONO = WOENTRY.WONO
+
+	WHERE OPENCLOS = 'Standard' 
+	AND 		
+	dq.DEPT_ID = 'STAG'
+  AND
+	dq.CURR_QTY > 0
+	AND
+	ipar.PART_NO = @pcba
+	AND
+	ipar.REVISION = @rev)
+
+INSERT INTO Interactive.dbo.TM_request
+	(
+	[REQUEST_ID]
+      ,[STATUS]
+      ,[PCBA]
+      ,[PCBA_REV]
+	  ,BARE_PCB
+	  ,BARE_PCB_REV
+	  ,ORDER_STENCIL
+	  ,START_DATE
+	  ,PROD_FEEDBACK
+	  ,PCBA_DOC
+	  ,PCBA_DOC_REV
+	  ,Resp_Party
+	)
+
+SELECT DISTINCT 
+	@id AS REQUEST_ID
+	,@status AS STATUS
+	,@pcba AS PCBA
+    ,@rev AS PCBA_REV
+	,ichi.PART_NO AS BARE_PCB
+	,ichi.REVISION AS PCB_REV
+	,CASE WHEN ((po.ORD_QTY = 1 and po.RECV_QTY = 0) OR EXISTS (SELECT QTY_OH from manex.dbo.INVTMFGR WHERE ipar3.UNIQ_KEY = INVTMFGR.UNIQ_KEY AND QTY_OH > 0)) THEN 'N' ELSE 'Y' END AS STENCIL
+	,CASE WHEN LEFT(pd.START_DTS, LEN(pd.START_DTS) - 8) < @custdate THEN CONVERT(date,(LEFT(pd.START_DTS, LEN(pd.START_DTS) - 8))) ELSE CONVERT(date,@custdate,1) END AS STARTDATE
+	,CASE WHEN ipar.FEEDBACK like '' THEN 'N' ELSE 'Y' END AS FEEDBACK
+	,a.DOCNO
+	,a.DOCREVNO
+	,'ME' AS Resp_Party
+	  
+ FROM 
+       MANEX.dbo.INVENTOR ipar 
+LEFT JOIN
+	   MANEX.dbo.WOENTRY w
+ON 
+       ipar.UNIQ_KEY = w.UNIQ_KEY --for wo assembly info
+INNER JOIN 
+       MANEX.dbo.INVENTOR ipar2 
+ON 
+       ipar.UNIQ_KEY = ipar2.INT_UNIQ --for wo assembly info
+LEFT JOIN 
+       MANEX.dbo.PROD_DTS pd 
+ON 
+       w.WONO = pd.WONO --for need-by date
+LEFT JOIN
+		MANEX.dbo.TOOLING tool
+ON
+		ipar.UNIQ_KEY = tool.UNIQ_KEY
+INNER JOIN 
+       MANEX.dbo.BOM_DET bd 
+ON 
+       ipar.UNIQ_KEY = bd.BOMPARENT --for BOM info
+INNER JOIN 
+       MANEX.dbo.INVENTOR ichi 
+ON 
+       bd.UNIQ_KEY = ichi.UNIQ_KEY --for component info
+LEFT JOIN 
+		Manex.dbo.ASSYDOC a
+ON
+		ipar.UNIQ_KEY = a.UNIQ_KEY
+INNER JOIN
+		Manex.dbo.INVENTOR ipar3
+ON
+		tool.TOOLLOC = ipar3.PART_NO
+LEFT JOIN
+		manex.dbo.POITEMS po
+ON
+		ipar3.UNIQ_KEY = po.UNIQ_KEY
+  WHERE 
+		ipar.PART_NO = @pcba
+	AND
+		ipar.REVISION = @rev
+  AND 
+		(ichi.PART_NO LIKE '60%' OR ichi.PART_NO LIKE '61%')
+  AND
+		(tool.TOOLLOC LIKE '31%' OR tool.TOOLLOC is null)
+  AND
+		(a.DOCNO like '30%' OR a.DOCNO is null)
+  AND
+		ipar3.STATUS = 'active'
+		  AND
+		w.OPENCLOS = 'Standard' 
+	AND
+		(EXISTS 
+		(SELECT TM_request.REQUEST_ID 
+		FROM TM_request 
+		WHERE 
+		TM_request.REQUEST_ID = @id
+		AND
+		TM_request.STATUS = 'Initiated'))
+  ORDER BY STARTDATE, PCBA
+  
+  ELSE
+
+  INSERT INTO Interactive.dbo.TM_request
+	(
+	[REQUEST_ID]
+      ,[STATUS]
+      ,[PCBA]
+      ,[PCBA_REV]
+	  ,BARE_PCB
+	  ,BARE_PCB_REV
+	  ,ORDER_STENCIL
+	  ,START_DATE
+	  ,PROD_FEEDBACK
+	  ,PCBA_DOC
+	  ,PCBA_DOC_REV
+	  ,Resp_Party
+	)
+
+SELECT DISTINCT 
+	@id AS REQUEST_ID
+	,@status AS STATUS
+	,@pcba AS PCBA
+    ,@rev AS PCBA_REV
+	,ichi.PART_NO AS BARE_PCB
+	,ichi.REVISION AS PCB_REV
+	,CASE WHEN ((po.ORD_QTY = 1 and po.RECV_QTY = 0) OR EXISTS (SELECT QTY_OH from manex.dbo.INVTMFGR WHERE ipar3.UNIQ_KEY = INVTMFGR.UNIQ_KEY AND QTY_OH > 0)) THEN 'N' ELSE 'Y' END AS STENCIL
+	,CONVERT(date,@custdate,1) AS STARTDATE
+	,CASE WHEN ipar.FEEDBACK like '' THEN 'N' ELSE 'Y' END AS FEEDBACK
+	,a.DOCNO
+	,a.DOCREVNO
+	,'ME' AS Resp_Party
+
+ FROM 
+       MANEX.dbo.INVENTOR ipar 
+INNER JOIN 
+       MANEX.dbo.INVENTOR ipar2 
+ON 
+       ipar.UNIQ_KEY = ipar2.INT_UNIQ --for wo assembly info
+LEFT JOIN
+		MANEX.dbo.TOOLING tool
+ON
+		ipar.UNIQ_KEY = tool.UNIQ_KEY
+INNER JOIN 
+       MANEX.dbo.BOM_DET bd 
+ON 
+       ipar.UNIQ_KEY = bd.BOMPARENT --for BOM info
+INNER JOIN 
+       MANEX.dbo.INVENTOR ichi 
+ON 
+       bd.UNIQ_KEY = ichi.UNIQ_KEY --for component info
+LEFT JOIN 
+		Manex.dbo.ASSYDOC a
+ON
+		ipar.UNIQ_KEY = a.UNIQ_KEY
+INNER JOIN
+		Manex.dbo.INVENTOR ipar3
+ON
+		tool.TOOLLOC = ipar3.PART_NO
+LEFT JOIN
+		manex.dbo.POITEMS po
+ON
+		ipar3.UNIQ_KEY = po.UNIQ_KEY
+  WHERE 
+		ipar.PART_NO = @pcba
+	AND
+		ipar.REVISION = @rev
+  AND 
+		(ichi.PART_NO LIKE '60%' OR ichi.PART_NO LIKE '61%')
+  AND
+		(tool.TOOLLOC LIKE '31%' OR tool.TOOLLOC is null)
+  AND
+		(a.DOCNO like '30%' OR a.DOCNO is null)
+  AND
+		ipar3.STATUS = 'active' 
+	AND
+		(EXISTS 
+		(SELECT TM_request.REQUEST_ID 
+		FROM TM_request 
+		WHERE 
+		TM_request.REQUEST_ID = @id
+		AND
+		TM_request.STATUS = 'Initiated'))
+  ORDER BY STARTDATE, PCBA
+
+IF @@TRANCOUNT>0
+       COMMIT
+END TRY
+BEGIN CATCH
+       IF @@TRANCOUNT>0
+              ROLLBACK
+       SELECT @ErrorMessage = ERROR_MESSAGE(),
+    @ErrorSeverity = ERROR_SEVERITY(),
+    @ErrorState = ERROR_STATE();
+       RAISERROR (@ErrorMessage, -- Message text.
+            @ErrorSeverity, -- Severity.
+            @ErrorState -- State.
+            );
+END CATCH
+
+
+
+END

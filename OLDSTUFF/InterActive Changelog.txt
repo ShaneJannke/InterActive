@@ -1,0 +1,39 @@
+6/20/21 SJ
+Changed 'Labels' button and folder to 'Materials'. Added a button for automated kitting label printing
+
+6/21/22 SJ
+Requested to add confirmation message in report text for W_SN_To_Scrap function - will let Noah handle this
+Main_Tree_7 updated to reduce size of columns
+Updated TM_populate_resp in SQL to insert Y/N into Feedback based on whether results were found
+Updated SUB_Add_By_WONO in SQL to have a different date format without times
+
+6/22/22 SJ
+added a line to clear the report text before something new is inserted - not changed in InterActive.py so ultratec isnt affected
+changed the text of Sub_Request_Note_B in InterActive.py to "Add Note"
+changed main_tree_7 to have less columns - beginning full rework of Task Manager
+changed TM_Populate_Resp in SQL to line up with Main_Tree_7
+LOTS of Task Manager changes, still needs lots of work and possibly a complete remake
+
+6/23/22 SJ
+Updated titles of pop-up windows for buttons in the sub log to convey to the user what function they are using
+
+7/5/22 SJ
+Updated the following python files to sort by sub request after being submitted
+sub add alt
+sub set resp party
+sub add po
+sub change qty needed
+
+Updated Main_Tree_6, sub_request_populate, sub_request_populate_resp, view_sub_request, new_sub_request
+changed order of columns to be grouped better - main_tree.insert values need to be updated accordingly when columns are changed in main_tree
+updated SUB_Generate_ID in SQL to remove the PROACTIVE\ in the "added by" column
+
+
+=====KEY SQL CHANGES=====
+Updated SUB_Add_By_WONO in SQL to have a different date format without times
+updated SUB_Generate_ID in SQL to remove the PROACTIVE\ in the "added by" column
+Created SUB_Set_QTY_Needed
+
+InterActive Feedback and Kitting can be pushed live with the Testdatabase procedures to save time, they do not reference Interactive database
+SUB_Alt_History added, does not reference Interactive database
+SUB_Where_Alt_Used added, does not reference Interactive database

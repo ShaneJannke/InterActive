@@ -1,0 +1,38 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Populate_Status]    Script Date: 7/14/2022 2:23:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 7/14/22
+-- Description:	Procedure to Populate TM based on status and user selected
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Populate_Status]
+	-- DECLARE
+	@status varchar(50)
+	,@user nvarchar(100)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+IF @user = 'All'
+SELECT *
+FROM Interactive.dbo.TM_request
+
+WHERE
+	TM_request.STATUS = @status
+	ORDER BY START_DATE,LEN(REQUEST_ID), REQUEST_ID
+	ELSE
+
+SELECT *
+FROM Interactive.dbo.TM_request
+
+WHERE
+	TM_request.STATUS = @status
+	AND
+	TM_request.Resp_Party = @user
+	ORDER BY START_DATE,LEN(REQUEST_ID), REQUEST_ID
+END

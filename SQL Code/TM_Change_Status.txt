@@ -1,0 +1,30 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Change_Status]    Script Date: 7/14/2022 2:35:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 7/13/2022
+-- Description:	Procedure to change a Task Manager request's status
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Change_Status] 
+	-- DECLARE
+	 @id varchar(10)
+	,@status varchar(20)
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+UPDATE
+	Interactive.dbo.TM_request
+SET
+	STATUS = @status
+WHERE
+	REQUEST_ID = @id
+AND
+	NOT STATUS = 'Initiated'
+END

@@ -1,0 +1,25 @@
+USE [Interactive]
+GO
+
+/****** Object:  Table [dbo].[TM_request]    Script Date: 7/14/2022 2:07:16 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[TM_request](
+	[REQUEST_ID] [varchar](20) NULL,
+	[PCBA] [varchar](20) NULL,
+	[PCBA_REV] [varchar](100) NULL,
+	[BARE_PCB] [varchar](50) NULL,
+	[BARE_PCB_REV] [varchar](20) NULL,
+	[ORDER_STENCIL] [varchar](10) NULL,
+	[START_DATE] [varchar](100) NULL,
+	[PROD_FEEDBACK] [varchar](100) NULL,
+	[PCBA_DOC] [varchar](100) NULL,
+	[PCBA_DOC_REV] [nvarchar](20) NULL,
+	[STATUS] [varchar](100) NULL,
+	[Resp_Party] [nvarchar](1000) NULL
+)
+GO

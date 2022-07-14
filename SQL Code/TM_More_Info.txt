@@ -1,0 +1,149 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_More_Info]    Script Date: 7/14/2022 2:30:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:           SJ
+-- Create date: 6/22/2022
+-- Description:      Procedure to get more info about an assembly when double clicked
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_More_Info] 
+
+@id nvarchar(50)
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+	IF EXISTS (SELECT WOENTRY.WONO FROM MANEX.dbo.WOENTRY 
+	INNER JOIN MANEX.dbo.INVENTOR ipar
+	ON
+	WOENTRY.UNIQ_KEY = ipar.UNIQ_KEY
+	INNER JOIN
+		MANEX.dbo.DEPT_QTY dq
+ON
+		dq.WONO = WOENTRY.WONO
+	INNER JOIN	
+		Interactive.dbo.TM_request
+ON
+		(ipar.PART_NO = TM_request.PCBA AND ipar.REVISION = TM_request.PCBA_REV)
+
+	WHERE OPENCLOS = 'Standard' 
+	AND 		
+	dq.DEPT_ID = 'STAG'
+  AND
+	dq.CURR_QTY > 0
+  AND
+	TM_request.REQUEST_ID = @id
+	)
+
+  SELECT RIGHT(w.WONO, LEN(w.WONO) - 6) AS WONO
+	  ,tool.TOOLLOC AS STENCIL
+	  ,ipar.FEEDBACK
+	  ,c.CUSTNAME
+	  ,ipar2.CUSTPARTNO
+	  ,ipar2.CUSTREV
+	  ,ipar.DESCRIPT
+	  ,ipar.INV_NOTE 
+	  
+ FROM MANEX.dbo.WOENTRY w
+INNER JOIN 
+       MANEX.dbo.CUSTOMER c 
+ON 
+       w.CUSTNO = c.CUSTNO --for customer info
+INNER JOIN 
+       MANEX.dbo.INVENTOR ipar 
+ON 
+       w.UNIQ_KEY = ipar.UNIQ_KEY --for wo assembly info
+INNER JOIN 
+       MANEX.dbo.INVENTOR ipar2 
+ON 
+       ipar.UNIQ_KEY = ipar2.INT_UNIQ --for wo assembly info
+LEFT JOIN 
+       MANEX.dbo.PROD_DTS pd 
+ON 
+       w.WONO = pd.WONO --for need-by date
+LEFT JOIN
+		MANEX.dbo.TOOLING tool
+ON
+		tool.UNIQ_KEY = ipar.UNIQ_KEY
+INNER JOIN
+		MANEX.dbo.DEPT_QTY dq
+ON
+		dq.WONO = w.WONO
+INNER JOIN 
+       MANEX.dbo.BOM_DET bd 
+ON 
+       w.UNIQ_KEY = bd.BOMPARENT --for BOM info
+
+INNER JOIN 
+       MANEX.dbo.INVENTOR ichi 
+ON 
+       bd.UNIQ_KEY = ichi.UNIQ_KEY --for component info
+INNER JOIN
+		Interactive.dbo.TM_request 
+		ON
+		ipar.PART_NO = TM_request.PCBA
+  WHERE 
+		dq.DEPT_ID = 'STAG' 
+  AND
+		dq.CURR_QTY > 0
+  AND
+		w.OPENCLOS = 'Standard' 
+  AND
+		tool.TOOLLOC LIKE '31%'
+  AND 
+		(ichi.PART_NO LIKE '60%' OR ichi.PART_NO LIKE '61%')
+  AND
+		TM_request.REQUEST_ID = @id 
+
+	ELSE
+
+	  SELECT '' AS WONO
+	  ,tool.TOOLLOC AS STENCIL
+	  ,ipar.FEEDBACK
+	  ,c.CUSTNAME
+	  ,ipar2.CUSTPARTNO
+	  ,ipar2.CUSTREV
+	  ,ipar.DESCRIPT
+	  ,ipar.INV_NOTE 
+	  
+ FROM 
+       MANEX.dbo.INVENTOR ipar 
+INNER JOIN 
+       MANEX.dbo.INVENTOR ipar2 
+ON 
+       ipar.UNIQ_KEY = ipar2.INT_UNIQ --for wo assembly info
+	   INNER JOIN
+MANEX.dbo.CUSTOMER c
+ON
+ipar2.CUSTNO = c.CUSTNO
+LEFT JOIN
+		MANEX.dbo.TOOLING tool
+ON
+		tool.UNIQ_KEY = ipar.UNIQ_KEY
+
+INNER JOIN 
+       MANEX.dbo.BOM_DET bd 
+ON 
+       ipar.UNIQ_KEY = bd.BOMPARENT --for BOM info
+
+INNER JOIN 
+       MANEX.dbo.INVENTOR ichi 
+ON 
+       bd.UNIQ_KEY = ichi.UNIQ_KEY --for component info
+INNER JOIN
+		Interactive.dbo.TM_request 
+		ON
+		ipar.PART_NO = TM_request.PCBA
+  WHERE 
+		tool.TOOLLOC LIKE '31%'
+  AND 
+		(ichi.PART_NO LIKE '60%' OR ichi.PART_NO LIKE '61%')
+  AND
+		TM_request.REQUEST_ID = @id 
+
+END

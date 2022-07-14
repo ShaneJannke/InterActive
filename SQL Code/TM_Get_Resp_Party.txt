@@ -1,0 +1,23 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Get_Resp_Party]    Script Date: 7/14/2022 2:32:33 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:           SJ
+-- Create date: 7/14/22
+-- Description:      Procedure to pull the responsible user for a TM Request
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Get_Resp_Party] 
+
+@id varchar(10)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+SELECT Resp_Party 
+FROM Interactive.dbo.TM_request
+WHERE REQUEST_ID = @id
+END

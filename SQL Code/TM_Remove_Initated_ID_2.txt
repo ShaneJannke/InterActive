@@ -1,0 +1,31 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Remove_Initated_ID_2]    Script Date: 7/14/2022 2:29:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 7/14/22
+-- Description:	Procedure to remove duplicate Request IDs
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Remove_Initated_ID_2] 
+	-- DECLARE
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+DELETE
+FROM Interactive.dbo.TM_request
+WHERE REQUEST_ID IN
+(
+SELECT REQUEST_ID FROM Interactive.dbo.TM_request
+GROUP BY REQUEST_ID
+HAVING COUNT(*) > 1
+)
+AND STATUS = 'Initiated'
+
+
+END

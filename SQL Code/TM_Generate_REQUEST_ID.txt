@@ -1,0 +1,49 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Generate_REQUEST_ID]    Script Date: 7/14/2022 2:26:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 7/14/22
+-- Description:	Procedure to initiate generation of TM Request IDs
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Generate_REQUEST_ID] 
+	-- DECLARE
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+DECLARE @date date = getdate() --So they don't have to manually enter this in
+DECLARE @user nvarchar(200) = REPLACE(suser_name(), 'PROACTIVE\', '') --So they don't have to manually enter this in --trim the proactive from the name
+
+
+INSERT INTO Interactive.dbo.TM_REQUEST_ID_GENERATOR
+	(
+
+	[DATE_ADDED]
+      ,[ADDED_BY]
+	)
+SELECT 
+	@date AS DATE_ADDED
+	,@user AS ADDED_BY;
+
+INSERT INTO Interactive.dbo.TM_request 
+	(
+	[REQUEST_ID]
+	,STATUS
+	,Resp_Party
+	)
+SELECT 
+	g2.REQUEST_ID AS REQUEST_ID
+	,'Initiated' AS STATUS
+	,'ME' AS Resps_Party
+
+FROM Interactive.dbo.TM_REQUEST_ID_GENERATOR g2
+
+ORDER BY LEN(REQUEST_ID), REQUEST_ID;
+
+END

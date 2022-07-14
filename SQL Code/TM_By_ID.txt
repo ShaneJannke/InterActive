@@ -1,0 +1,25 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_By_ID]    Script Date: 7/14/2022 2:18:20 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 7/14/22
+-- Description:	Procedure to view TM Request with shared ID's
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_By_ID] 
+	-- DECLARE
+	@id varchar(20)
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+SELECT *
+FROM Interactive.dbo.TM_request
+WHERE
+	REQUEST_ID = @id
+END

@@ -1,0 +1,25 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Set_Resp_Party]    Script Date: 7/14/2022 2:21:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:           SJ
+-- Create date: 5/17/2022
+-- Description:      Procedure to set resp party for task manager
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Set_Resp_Party] 
+
+@USER nvarchar(50)
+,@id varchar(10)
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+UPDATE Interactive.dbo.TM_request
+SET Resp_Party = @USER
+WHERE REQUEST_ID = @id
+END

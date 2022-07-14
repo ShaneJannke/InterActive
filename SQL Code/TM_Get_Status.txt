@@ -1,0 +1,25 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Get_Status]    Script Date: 7/14/2022 2:22:00 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 6/9/22
+-- Description:	Procedure to view TM Request status
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Get_Status] 
+	-- DECLARE
+	@id varchar(20)
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+SELECT STATUS
+FROM Interactive.dbo.TM_request
+WHERE
+	REQUEST_ID = @id
+END

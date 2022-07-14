@@ -1,0 +1,25 @@
+====================================================================================================================================================
+									READ ME
+This is a sample of a patch notes that we could send out to everyone so they have a general idea what features were added or changed and their restrictions.
+This could be a good placeholder until we get a proper work instruction created.
+
+====================================================================================================================================================
+
+
+================================================================================FILE TAB================================================================================
+InterActive Feedback - Submit feedback for Shane or Noah to view! This can include fixes, new functions, or any other suggestions
+View feedback - view the feedback others have entered so far
+Edit Feedback - a way for Shane and Noah to remove feedback that has been taken care of already - password locked.
+
+====================================================================================================================================================================================
+
+================================================================================MATERIALS================================================================================
+Materials - Added kitting tab, kitting labels button will automate the kitting label after entering WONO and page count.
+
+================================================================================================================================================================
+
+================================================================================SUB LOG================================================================================
+Change QTY Needed - changes QTY needed for a certain Request, WONO, PN that is not initiated or closed
+PN Alt History - Finds all Alternate Parts used on BOMs for the entered PN, select any Status or Resp User to refresh the main view
+Where Alt Used - Enter an ALT PN and see what parts and assemblies this alt is used for
+================================================================================================================================================================

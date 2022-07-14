@@ -1,0 +1,26 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[TM_Search_Assy]    Script Date: 7/14/2022 2:23:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author: SJ
+-- Create date: 7/14/22
+-- Description:	Procedure to view Assemblies in the Task Manager
+-- =============================================
+CREATE PROCEDURE [dbo].[TM_Search_Assy] 
+	-- DECLARE
+	@pcba nvarchar(40)
+
+AS
+BEGIN
+SET NOCOUNT ON;
+
+SELECT *
+FROM Interactive.dbo.TM_request
+WHERE
+	PCBA = @pcba
+ORDER BY START_DATE, LEN(REQUEST_ID), REQUEST_ID
+END
