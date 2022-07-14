@@ -207,7 +207,7 @@ class InterActive():
         
         self.Sub_Log_B = Button(self.frame0, text = "Sub Log", command = lambda: self.Sub_Log(root))
 
-        #self.Task_Manager_B = Button(self.frame0, text = "Task Manager", command = partial(Task_Manager.TM_Start, self.Main_Tree, self.Book, self.frame6, self.Report_Text,self.Sub_Request_V, root, self.TM_Options_V,self.ME_clicked))
+        self.Task_Manager_B = Button(self.frame0, text = "Task Manager", command = partial(Task_Manager.TM_Start, self.Main_Tree, self.Book, self.frame6, self.Report_Text,self.Sub_Request_V, root, self.TM_Options_V,self.ME_clicked))
 
         self.frame0_Separator_Label_1 = Label(self.frame0, text = "Programs", font = "arial 10 bold")
         self.frame0_Separator_1 = ttk.Separator(self.frame0, orient = VERTICAL)
