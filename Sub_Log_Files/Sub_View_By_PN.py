@@ -45,9 +45,9 @@ def Sub_View_By_PN(Main_Tree,Book,Report_Text):
                 PrimaryID = len(Unique_List)
                 
                 if PrimaryID % 2 == 0:
-                    Main_Tree.insert(parent ='', index= 'end', iid = PrimaryID, text="", values=(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21],row[22]),tags = "PrimaryRow")
+                    Main_Tree.insert(parent ='', index= 'end', iid = PrimaryID, text="", values=(row[0],row[3],row[4],row[5],row[8],row[7],row[6],row[9],row[18],row[11],row[10],row[13],row[14],row[12],row[20],row[21],row[22],row[15],row[16],row[17],row[19],row[2],row[1]),tags = "PrimaryRow")
                 else:
-                    Main_Tree.insert(parent ='', index= 'end', iid = PrimaryID, text="", values=(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21],row[22]),tags = "SecondaryRow")
+                    Main_Tree.insert(parent ='', index= 'end', iid = PrimaryID, text="", values=(row[0],row[3],row[4],row[5],row[8],row[7],row[6],row[9],row[18],row[11],row[10],row[13],row[14],row[12],row[20],row[21],row[22],row[15],row[16],row[17],row[19],row[2],row[1]),tags = "SecondaryRow")
                 
                 Secondary_Row = 1
                 
@@ -55,10 +55,10 @@ def Sub_View_By_PN(Main_Tree,Book,Report_Text):
                 SecondaryID = str(PrimaryID) + "_" + str(Secondary_Row) #Secondary not not neaded, just kept in case we need to add extra informaiton to the log
                 
                 if PrimaryID % 2 == 0:
-                    Main_Tree.insert(PrimaryID, index= 'end', iid= SecondaryID, text="", values=(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21],row[22]),tags = "PrimaryRow")
+                    Main_Tree.insert(PrimaryID, index= 'end', iid= SecondaryID, text="", values=(row[0],row[3],row[4],row[5],row[8],row[7],row[6],row[9],row[18],row[11],row[10],row[13],row[14],row[12],row[20],row[21],row[22],row[15],row[16],row[17],row[19],row[2],row[1]),tags = "PrimaryRow")
                     
                 else:
-                    Main_Tree.insert(PrimaryID, index= 'end', iid= SecondaryID, text="", values=(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13],row[14],row[15],row[16],row[17],row[18],row[19],row[20],row[21],row[22]),tags = "SecondaryRow")
+                    Main_Tree.insert(PrimaryID, index= 'end', iid= SecondaryID, text="", values=(row[0],row[3],row[4],row[5],row[8],row[7],row[6],row[9],row[18],row[11],row[10],row[13],row[14],row[12],row[20],row[21],row[22],row[15],row[16],row[17],row[19],row[2],row[1]),tags = "SecondaryRow")
                     
                 Secondary_Row = Secondary_Row + 1
             
