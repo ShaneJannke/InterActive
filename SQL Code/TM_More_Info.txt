@@ -1,6 +1,6 @@
 USE [Interactive]
 GO
-/****** Object:  StoredProcedure [dbo].[TM_More_Info]    Script Date: 7/14/2022 2:30:25 PM ******/
+/****** Object:  StoredProcedure [dbo].[TM_More_Info]    Script Date: 7/15/2022 8:30:11 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -10,7 +10,7 @@ GO
 -- Create date: 6/22/2022
 -- Description:      Procedure to get more info about an assembly when double clicked
 -- =============================================
-CREATE PROCEDURE [dbo].[TM_More_Info] 
+ALTER PROCEDURE [dbo].[TM_More_Info] 
 
 @id nvarchar(50)
 
@@ -41,7 +41,7 @@ ON
 	)
 
   SELECT RIGHT(w.WONO, LEN(w.WONO) - 6) AS WONO
-	  ,tool.TOOLLOC AS STENCIL
+	  ,CASE WHEN tool.TOOLLOC like '31%' THEN tool.TOOLLOC ELSE '' END AS STENCIL
 	  ,ipar.FEEDBACK
 	  ,c.CUSTNAME
 	  ,ipar2.CUSTPARTNO
@@ -69,7 +69,7 @@ ON
 LEFT JOIN
 		MANEX.dbo.TOOLING tool
 ON
-		tool.UNIQ_KEY = ipar.UNIQ_KEY
+		ipar.UNIQ_KEY = tool.UNIQ_KEY  
 INNER JOIN
 		MANEX.dbo.DEPT_QTY dq
 ON
@@ -78,15 +78,10 @@ INNER JOIN
        MANEX.dbo.BOM_DET bd 
 ON 
        w.UNIQ_KEY = bd.BOMPARENT --for BOM info
-
-INNER JOIN 
-       MANEX.dbo.INVENTOR ichi 
-ON 
-       bd.UNIQ_KEY = ichi.UNIQ_KEY --for component info
 INNER JOIN
 		Interactive.dbo.TM_request 
 		ON
-		ipar.PART_NO = TM_request.PCBA
+		ipar.PART_NO = TM_request.PCBA AND ipar.REVISION = TM_request.PCBA_REV
   WHERE 
 		dq.DEPT_ID = 'STAG' 
   AND
@@ -94,16 +89,14 @@ INNER JOIN
   AND
 		w.OPENCLOS = 'Standard' 
   AND
-		tool.TOOLLOC LIKE '31%'
-  AND 
-		(ichi.PART_NO LIKE '60%' OR ichi.PART_NO LIKE '61%')
+		(tool.TOOLLOC LIKE '31%' OR tool.TOOLLOC is null)
   AND
 		TM_request.REQUEST_ID = @id 
 
 	ELSE
 
 	  SELECT '' AS WONO
-	  ,tool.TOOLLOC AS STENCIL
+	  ,CASE WHEN tool.TOOLLOC like '31%' THEN tool.TOOLLOC ELSE '' END AS STENCIL
 	  ,ipar.FEEDBACK
 	  ,c.CUSTNAME
 	  ,ipar2.CUSTPARTNO
@@ -124,25 +117,14 @@ ipar2.CUSTNO = c.CUSTNO
 LEFT JOIN
 		MANEX.dbo.TOOLING tool
 ON
-		tool.UNIQ_KEY = ipar.UNIQ_KEY
+		ipar.UNIQ_KEY = tool.UNIQ_KEY
 
-INNER JOIN 
-       MANEX.dbo.BOM_DET bd 
-ON 
-       ipar.UNIQ_KEY = bd.BOMPARENT --for BOM info
-
-INNER JOIN 
-       MANEX.dbo.INVENTOR ichi 
-ON 
-       bd.UNIQ_KEY = ichi.UNIQ_KEY --for component info
 INNER JOIN
 		Interactive.dbo.TM_request 
 		ON
-		ipar.PART_NO = TM_request.PCBA
+		ipar.PART_NO = TM_request.PCBA AND ipar.REVISION = TM_request.PCBA_REV
   WHERE 
-		tool.TOOLLOC LIKE '31%'
-  AND 
-		(ichi.PART_NO LIKE '60%' OR ichi.PART_NO LIKE '61%')
+		(tool.TOOLLOC LIKE '31%' OR tool.TOOLLOC is null)
   AND
 		TM_request.REQUEST_ID = @id 
 
