@@ -1,6 +1,6 @@
 USE [Interactive]
 GO
-/****** Object:  StoredProcedure [dbo].[TM_Add_Assembly]    Script Date: 7/14/2022 2:36:24 PM ******/
+/****** Object:  StoredProcedure [dbo].[TM_Add_Assembly]    Script Date: 7/15/2022 8:17:39 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -10,7 +10,7 @@ GO
 -- Create date: 7/14/22
 -- Description:	Procedure to update the sub_request table with Assy Number
 -- =============================================
-CREATE PROCEDURE [dbo].[TM_Add_Assembly] 
+ALTER PROCEDURE [dbo].[TM_Add_Assembly] 
 	-- DECLARE
 	@id varchar(20)
 	,@pcba varchar(20)
@@ -30,6 +30,154 @@ BEGIN TRANSACTION
 
 DECLARE @status varchar(100) = 'Open'
 
+IF (@pcba like '80%' OR @pcba like '81%')
+
+
+	IF EXISTS (SELECT WOENTRY.WONO FROM MANEX.dbo.WOENTRY 
+	INNER JOIN MANEX.dbo.INVENTOR ipar
+	ON
+	WOENTRY.UNIQ_KEY = ipar.UNIQ_KEY
+	INNER JOIN
+		MANEX.dbo.DEPT_QTY dq
+ON
+		dq.WONO = WOENTRY.WONO
+
+	WHERE OPENCLOS = 'Standard' 
+	AND 		
+	dq.DEPT_ID = 'STAG'
+  AND
+	dq.CURR_QTY > 0
+	AND
+	ipar.PART_NO = @pcba
+	AND
+	ipar.REVISION = @rev)
+
+INSERT INTO Interactive.dbo.TM_request
+	(
+	[REQUEST_ID]
+      ,[STATUS]
+      ,[PCBA]
+      ,[PCBA_REV]
+	  ,BARE_PCB
+	  ,BARE_PCB_REV
+	  ,ORDER_STENCIL
+	  ,START_DATE
+	  ,PROD_FEEDBACK
+	  ,PCBA_DOC
+	  ,PCBA_DOC_REV
+	  ,Resp_Party
+	)
+
+SELECT DISTINCT 
+	@id AS REQUEST_ID
+	,@status AS STATUS
+	,@pcba AS PCBA
+    ,@rev AS PCBA_REV
+	,'N/A' AS BARE_PCB
+	,'N/A' AS PCB_REV
+	,'N/A' AS ORDER_STENCIL
+	,CASE WHEN LEFT(pd.START_DTS, LEN(pd.START_DTS) - 8) < @custdate THEN CONVERT(date,(LEFT(pd.START_DTS, LEN(pd.START_DTS) - 8))) ELSE CONVERT(date,@custdate,1) END AS STARTDATE
+	,CASE WHEN ipar.FEEDBACK like '' THEN 'N' ELSE 'Y' END AS FEEDBACK
+	,a.DOCNO
+	,a.DOCREVNO
+	,'ME' AS Resp_Party
+	  
+ FROM 
+       MANEX.dbo.INVENTOR ipar 
+LEFT JOIN
+	   MANEX.dbo.WOENTRY w
+ON 
+       ipar.UNIQ_KEY = w.UNIQ_KEY --for wo assembly info
+INNER JOIN 
+       MANEX.dbo.INVENTOR ipar2 
+ON 
+       ipar.UNIQ_KEY = ipar2.INT_UNIQ --for wo assembly info
+LEFT JOIN 
+       MANEX.dbo.PROD_DTS pd 
+ON 
+       w.WONO = pd.WONO --for need-by date
+LEFT JOIN 
+		Manex.dbo.ASSYDOC a
+ON
+		ipar.UNIQ_KEY = a.UNIQ_KEY
+  WHERE 
+		ipar.PART_NO = @pcba
+	AND
+		ipar.REVISION = @rev
+  AND
+		(a.DOCNO like '30%' OR a.DOCNO is null)
+	AND
+		w.OPENCLOS = 'Standard' 
+	AND
+		(EXISTS 
+		(SELECT TM_request.REQUEST_ID 
+		FROM TM_request 
+		WHERE 
+		TM_request.REQUEST_ID = @id
+		AND
+		TM_request.STATUS = 'Initiated'))
+  ORDER BY STARTDATE, PCBA
+  
+  ELSE
+
+  INSERT INTO Interactive.dbo.TM_request
+	(
+	[REQUEST_ID]
+      ,[STATUS]
+      ,[PCBA]
+      ,[PCBA_REV]
+	  ,BARE_PCB
+	  ,BARE_PCB_REV
+	  ,ORDER_STENCIL
+	  ,START_DATE
+	  ,PROD_FEEDBACK
+	  ,PCBA_DOC
+	  ,PCBA_DOC_REV
+	  ,Resp_Party
+	)
+
+SELECT DISTINCT 
+	@id AS REQUEST_ID
+	,@status AS STATUS
+	,@pcba AS PCBA
+    ,@rev AS PCBA_REV
+	,'N/A' AS BARE_PCB
+	,'N/A' AS PCB_REV
+	,'N/A' AS STENCIL
+	,CONVERT(date,@custdate,1) AS STARTDATE
+	,CASE WHEN ipar.FEEDBACK like '' THEN 'N' ELSE 'Y' END AS FEEDBACK
+	,a.DOCNO
+	,a.DOCREVNO
+	,'ME' AS Resp_Party
+
+ FROM 
+       MANEX.dbo.INVENTOR ipar 
+INNER JOIN 
+       MANEX.dbo.INVENTOR ipar2 
+ON 
+       ipar.UNIQ_KEY = ipar2.INT_UNIQ --for wo assembly info
+LEFT JOIN 
+		Manex.dbo.ASSYDOC a
+ON
+		ipar.UNIQ_KEY = a.UNIQ_KEY
+  WHERE 
+		ipar.PART_NO = @pcba
+	AND
+		ipar.REVISION = @rev
+  AND
+		(a.DOCNO like '30%' OR a.DOCNO is null)
+	AND
+		(EXISTS 
+		(SELECT TM_request.REQUEST_ID 
+		FROM TM_request 
+		WHERE 
+		TM_request.REQUEST_ID = @id
+		AND
+		TM_request.STATUS = 'Initiated'))
+  ORDER BY STARTDATE, PCBA
+
+
+ELSE
 
 	IF EXISTS (SELECT WOENTRY.WONO FROM MANEX.dbo.WOENTRY 
 	INNER JOIN MANEX.dbo.INVENTOR ipar
@@ -240,7 +388,6 @@ BEGIN CATCH
             @ErrorState -- State.
             );
 END CATCH
-
 
 
 END
