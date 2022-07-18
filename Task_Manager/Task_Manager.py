@@ -10,6 +10,12 @@ import Task_Manager
 
 def TM_Start(Main_Tree, Book, frame6, Report_Text, Sub_Request_V, root,TM_Options_V,ME_clicked):
 
+    conn2 = pyodbc.connect("Driver={ODBC Driver 17 for SQL Server};"
+                               "Server=DC01;"
+                               "Database=Interactive;"
+                               "Trusted_Connection=yes;")
+    c = conn2.cursor()
+
     root.title('Inter-Active 1.8.2/Task_Manager')
 
     Book.hide(1)
@@ -31,6 +37,9 @@ def TM_Start(Main_Tree, Book, frame6, Report_Text, Sub_Request_V, root,TM_Option
     Main_Tree.bind('<Double-Button-1>', partial(Task_Manager.TM_More_Info,Report_Text, Sub_Request_V))
 
     Sub_Request_V.set(None)
+
+    #Update the feedback display incase feedback has been added or removed
+    c.execute('EXEC Interactive.dbo.Update_TM_Feedback')
 
     Task_Manager.TM_populate_status(Main_Tree,TM_Options_V,Report_Text,ME_clicked)
 
