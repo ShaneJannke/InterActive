@@ -103,58 +103,58 @@ def Sub_By_WONO(Report_Text,Sub_Request_V,Main_Tree,Book):
             CurrQTY = QTYarray[0,0]
             
             #get SONO from database for given ID
-            #SO_exe_String = "EXEC Interactive.dbo.SUB_Get_SONO @id=?"
-            #c.execute(SO_exe_String,ID)
-            #data = c.fetchall()
-            #SONOs = np.array(data)
-            #SONO = SONOs[0,0]
+            SO_exe_String = "EXEC Interactive.dbo.SUB_Get_SONO @id=?"
+            c.execute(SO_exe_String,ID)
+            data = c.fetchall()
+            SONOs = np.array(data)
+            SONO = SONOs[0,0]
             #if Sub Request has no SONO entered arleady, get sono from manex
-            #if SONO == None:
-            try:
-                exe_String1 = "EXEC Interactive.dbo.SUB_Add_By_WONO @id=?, @iwo=?, @iPN=?, @iqty=?, @SC=?, @ME=?, @CAS=?"
-                c.execute(exe_String1,ID,WO,PN,Qty,SC,ME,CAS) 
-                Remove_Iniated_2 = "EXEC Interactive.dbo.SUB_Remove_Initated_ID_2" #This removed all iniated from the log that already have open/closed requests
-                c.execute(Remove_Iniated_2)
-                '''
-                6/8/22 SJ
-                Update the Current QTY table with the variable pulled earlier
-                '''
-                SET_QTY_STRING = "EXEC Interactive.dbo.SUB_Set_Curr_QTY @CurrQTY=?, @ID=?"
-                c.execute(SET_QTY_STRING,CurrQTY,ID)
+            if SONO == None:
+                try:
+                    exe_String1 = "EXEC Interactive.dbo.SUB_Add_By_WONO @id=?, @iwo=?, @iPN=?, @iqty=?, @SC=?, @ME=?, @CAS=?"
+                    c.execute(exe_String1,ID,WO,PN,Qty,SC,ME,CAS) 
+                    Remove_Iniated_2 = "EXEC Interactive.dbo.SUB_Remove_Initated_ID_2" #This removed all iniated from the log that already have open/closed requests
+                    c.execute(Remove_Iniated_2)
+                    '''
+                    6/8/22 SJ
+                    Update the Current QTY table with the variable pulled earlier
+                    '''
+                    SET_QTY_STRING = "EXEC Interactive.dbo.SUB_Set_Curr_QTY @CurrQTY=?, @ID=?"
+                    c.execute(SET_QTY_STRING,CurrQTY,ID)
 
-                e1 = "Work Order " + WO + " and Part Number " + PN + " added to Sub Request " + ID + " by " + os.getlogin() + " on " + str(date.today().strftime("%m/%d/%Y"))
-                Sub_Log_Files.Update_Sub_Change_Log(e1,Report_Text,ID) 
+                    e1 = "Work Order " + WO + " and Part Number " + PN + " added to Sub Request " + ID + " by " + os.getlogin() + " on " + str(date.today().strftime("%m/%d/%Y"))
+                    Sub_Log_Files.Update_Sub_Change_Log(e1,Report_Text,ID) 
 
-            except Exception as e:
-                e1 = str(e)
-                Report_Text.configure(state = NORMAL)
-                Report_Text.delete('1.0',END)
-                Report_Text.insert(END, e1 + "\n")
-                Report_Text.configure(state = DISABLED)
-                Report_Text.see("end")
+                except Exception as e:
+                    e1 = str(e)
+                    Report_Text.configure(state = NORMAL)
+                    Report_Text.delete('1.0',END)
+                    Report_Text.insert(END, e1 + "\n")
+                    Report_Text.configure(state = DISABLED)
+                    Report_Text.see("end")
             #if sub request has a SONO already entered, check that it is the same as the one found in manex
-            #else:
-            #    try:
-            #        exe_String2 = "EXEC Interactive.dbo.SUB_Add_By_WONO_And_SONO @id=?, @iwo=?, @iPN=?, @iqty=?, @iso=?, @SC=?, @ME=?, @CAS=?"
-             #       c.execute(exe_String2,ID,WO,PN,Qty,SONO,SC,ME,CAS) 
-              #      Remove_Iniated_2 = "EXEC Interactive.dbo.SUB_Remove_Initated_ID_2" #This removed all iniated from the log that already have open/closed requests
-               #     c.execute(Remove_Iniated_2) 
-                '''
-                6/8/22 SJ
-                Update the Current QTY table with the variable pulled earlier
-                '''
-                #    SET_QTY_STRING = "EXEC Interactive.dbo.SUB_Set_Curr_QTY @CurrQTY=?, @ID=?"
-                 #   c.execute(SET_QTY_STRING,CurrQTY,ID)
+            else:
+                try:
+                    exe_String2 = "EXEC Interactive.dbo.SUB_Add_By_WONO_And_SONO @id=?, @iwo=?, @iPN=?, @iqty=?, @iso=?, @SC=?, @ME=?, @CAS=?"
+                    c.execute(exe_String2,ID,WO,PN,Qty,SONO,SC,ME,CAS) 
+                    Remove_Iniated_2 = "EXEC Interactive.dbo.SUB_Remove_Initated_ID_2" #This removed all iniated from the log that already have open/closed requests
+                    c.execute(Remove_Iniated_2) 
+                
+                #6/8/22 SJ
+                #Update the Current QTY table with the variable pulled earlier
+                
+                    SET_QTY_STRING = "EXEC Interactive.dbo.SUB_Set_Curr_QTY @CurrQTY=?, @ID=?"
+                    c.execute(SET_QTY_STRING,CurrQTY,ID)
 
-                  #  e1 = "Work Order " + WO + " and Part Number " + PN + " added to Sub Request " + ID + " by " + os.getlogin() + " on " + str(date.today().strftime("%m/%d/%Y"))
-                   # Sub_Log_Files.Update_Sub_Change_Log(e1,Report_Text,ID)
+                    e1 = "Work Order " + WO + " and Part Number " + PN + " added to Sub Request " + ID + " by " + os.getlogin() + " on " + str(date.today().strftime("%m/%d/%Y"))
+                    Sub_Log_Files.Update_Sub_Change_Log(e1,Report_Text,ID)
 
-                #except Exception as e:
-                 #   e1 = str(e)
-                  #  Report_Text.configure(state = NORMAL)
-                  #  Report_Text.insert(END, e1 + "\n")
-                   # Report_Text.configure(state = DISABLED)
-                    #Report_Text.see("end")  
+                except Exception as e:
+                    e1 = str(e)
+                    Report_Text.configure(state = NORMAL)
+                    Report_Text.insert(END, e1 + "\n")
+                    Report_Text.configure(state = DISABLED)
+                    Report_Text.see("end")  
 
             c.commit()
             c.close()
