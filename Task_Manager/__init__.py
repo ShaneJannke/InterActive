@@ -13,3 +13,4 @@ from Task_Manager.TM_View_Request import TM_View_Request
 from Task_Manager.TM_Get_Names import TM_Get_Names
 from Task_Manager.TM_Update_Change_Log import TM_Update_Change_Log
 from Task_Manager.TM_Get_Change_Log import TM_Get_Change_Log
+from Task_Manager.TM_Update_Feedback import TM_Update_Feedback

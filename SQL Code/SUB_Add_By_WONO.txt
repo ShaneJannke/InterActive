@@ -1,0 +1,183 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[SUB_Add_By_WONO]    Script Date: 7/21/2022 11:11:18 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 6/9/2022
+-- Description:	Procedure to update the sub_request table with WONO Entry
+-- =============================================
+ALTER PROCEDURE [dbo].[SUB_Add_By_WONO] 
+	-- DECLARE
+	@id varchar(20)
+	,@iwo varchar(10)--Inputted WO with or without leading zeros
+	,@iPN varchar(25) --Component that could use a sub
+	,@iqty nvarchar(20)
+	-- insert the responsible parties so they dont get set to null
+	,@SC varchar(20)
+	,@ME varchar(20)
+	,@CAS varchar(20)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+
+DECLARE @ErrorMessage NVARCHAR(max)
+DECLARE @ErrorSeverity INT
+DECLARE @ErrorState INT
+
+BEGIN TRY
+BEGIN TRANSACTION
+
+
+
+DECLARE @wo char(10) = FORMAT(CONVERT(int, @iwo), '0000000000') --@iwo but padded with leading zeroes to match Manex's formatting.
+DECLARE @date date = getdate() --So they don't have to manually enter this in
+DECLARE @user nvarchar(200) = suser_name() --So they don't have to manually enter this in
+DECLARE @_status varchar(10) = 'Pending SC'
+
+
+INSERT INTO Interactive.dbo.sub_request
+	(
+	[REQUEST_ID]
+      ,[DATE_ADDED]
+      ,[ADDED_BY]
+      ,[NEED_BY_DATE]
+      ,[_STATUS]
+      ,[PN]
+      ,[MFGR_PN]
+      ,[PART_MFGR]
+      ,[DESCRIPTION]
+      ,[SONO]
+      ,[WONO]
+      ,[PCBA_NAME]
+      ,[PCBA]
+      ,[PCBA_REV]
+      ,[CUST]
+      ,[CUST_PN]
+      ,[CUST_REV]
+      ,[QTY_NEEDED]
+      ,[REF_DES]
+	  ,[Resp_SC]
+	  ,[Resp_ME]
+	  ,[Resp_CAS]
+	)
+SELECT 
+	@id AS REQUEST_ID
+	,@date AS DATE_ADDED
+	,@user AS ADDED_BY
+	,FORMAT(pd.START_DTS, 'MM/dd/yy') AS NEED_BY_DATE
+	,@_status AS _STATUS
+	,TRIM(ichi.PART_NO) AS PN
+	,mf.MFGR_PN
+	,mf.PART_MFGR
+	,TRIM(ichi.DESCRIPT) AS [DESCRIPTION]
+    ,REPLACE(LTRIM(REPLACE(w.SONO, '0', ' ')), ' ', '0') AS SONO
+	,REPLACE(LTRIM(REPLACE(w.WONO, '0', ' ')), ' ', '0') AS WONO
+	,TRIM(ipar2.DESCRIPT) AS PCBA_NAME
+	,TRIM(ipar.PART_NO) AS PCBA
+    ,TRIM(ipar.REVISION) AS PCBA_REV
+	,TRIM(c.CUSTNAME) AS CUST
+    ,TRIM(ipar2.CUSTPARTNO) AS Cust_PN
+	,TRIM(ipar2.CUSTREV) AS Cust_REV
+	,@iqty AS QTY_NEEDED
+	,br.REF_DES AS REF_DES	
+	,@SC AS Resp_SC
+	,@ME AS Resp_ME
+	,@CAS AS Resp_CAS
+FROM MANEX.dbo.WOENTRY w
+INNER JOIN 
+	MANEX.dbo.CUSTOMER c 
+ON 
+	w.CUSTNO = c.CUSTNO --for customer info
+INNER JOIN 
+	MANEX.dbo.BOM_DET bd 
+ON 
+	w.UNIQ_KEY = bd.BOMPARENT --for BOM info
+INNER JOIN 
+	MANEX.dbo.INVENTOR ipar 
+ON 
+	w.UNIQ_KEY = ipar.UNIQ_KEY --for wo assembly info
+INNER JOIN 
+	MANEX.dbo.INVENTOR ipar2 
+ON 
+	ipar.UNIQ_KEY = ipar2.INT_UNIQ --for wo assembly info
+INNER JOIN 
+	MANEX.dbo.INVENTOR ichi 
+ON 
+	bd.UNIQ_KEY = ichi.UNIQ_KEY --for component info
+LEFT JOIN --For manufacturer info
+       (SELECT UNIQ_KEY, Part_Mfgr, Mfgr_PN 
+       FROM 
+              (SELECT ROW_NUMBER() OVER(PARTITION BY UNIQ_KEY ORDER BY LEN(MFGR_PT_NO)) AS rnum, UNIQ_KEY, TRIM(PARTMFGR) AS PART_MFGR, TRIM(MFGR_PT_NO) AS MFGR_PN
+              FROM MANEX.dbo.INVTMFHD 
+              WHERE IS_DELETED = 0
+              ) AS mfhd1
+       WHERE rnum = 1
+       ) AS mf ON bd.UNIQ_KEY = mf.UNIQ_KEY
+LEFT JOIN 
+	MANEX.dbo.BOM_REF br 
+ON 
+	bd.UNIQBOMNO = br.UNIQBOMNO --for REF Des when you're ready to use it. This has the potential to create multiple lines once joined.
+LEFT JOIN 
+	MANEX.dbo.PROD_DTS pd 
+ON 
+	w.WONO = pd.WONO --for need-by date
+WHERE 
+	w.WONO = @wo
+AND 
+	ichi.PART_NO = @iPN
+AND
+	NOT EXISTS
+	(SELECT sub_request.REQUEST_ID
+	FROM Interactive.dbo.sub_request
+	WHERE
+	sub_request.PN = @iPN
+	AND
+	sub_request.WONO = @iwo
+	)
+
+AND
+-- 6/16/22 SJ - checks that there is a status assigned to the sub request other than closed
+	EXISTS
+	(SELECT sub_request._STATUS
+	FROM Interactive.dbo.sub_request
+	WHERE
+	REQUEST_ID = @id
+	AND
+	_STATUS <> 'Closed'
+	)
+ORDER BY
+	w.WONO;
+
+
+IF @@ROWCOUNT = 0
+BEGIN
+       RAISERROR('No results came from Work Order %s and part number %s, please verify that the correct values have been entered and re-enter the your request.',-- Message text.
+              16, -- Severity.
+              1,-- State.
+              @iwo, --First argument (replace first %s with %i if variable is int)
+			  @iPN --second argument (replace second %s with %i if variable is int)
+        );    
+END  
+
+IF @@TRANCOUNT>0
+       COMMIT
+END TRY
+BEGIN CATCH
+       IF @@TRANCOUNT>0
+              ROLLBACK
+       SELECT @ErrorMessage = ERROR_MESSAGE(),
+    @ErrorSeverity = ERROR_SEVERITY(),
+    @ErrorState = ERROR_STATE();
+       RAISERROR (@ErrorMessage, -- Message text.
+            @ErrorSeverity, -- Severity.
+            @ErrorState -- State.
+            );
+END CATCH
+
+
+END

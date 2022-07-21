@@ -1,10 +1,11 @@
 USE [Interactive]
 GO
+/****** Object:  StoredProcedure [dbo].[Update_TM_Feedback]    Script Date: 7/18/2022 9:49:50 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [Update_TM_Feedback]
+ALTER PROCEDURE [dbo].[Update_TM_Feedback]
 AS
 BEGIN
 SET NOCOUNT ON;
@@ -16,6 +17,10 @@ FROM TM_request tm
 INNER JOIN
 MANEX.dbo.INVENTOR ipar
 ON
-tm.PCBA = ipar.PART_NO
+(tm.PCBA = ipar.PART_NO
+AND
+tm.PCBA_REV = ipar.REVISION)
+WHERE
+ipar.CUSTNO = ''
 
 END

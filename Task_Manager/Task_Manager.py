@@ -38,8 +38,7 @@ def TM_Start(Main_Tree, Book, frame6, Report_Text, Sub_Request_V, root,TM_Option
 
     Sub_Request_V.set(None)
 
-    #Update the feedback display incase feedback has been added or removed
-    c.execute('EXEC Interactive.dbo.Update_TM_Feedback')
+    Task_Manager.TM_Update_Feedback()
 
     Task_Manager.TM_populate_status(Main_Tree,TM_Options_V,Report_Text,ME_clicked)
 
