@@ -1,0 +1,27 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[SUB_PN_Count]    Script Date: 7/21/2022 3:22:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		SJ
+-- Create date: 6/9/2022
+-- Description:	Procedure to get the amount of PNs connected to a sub request
+-- =============================================
+ALTER PROCEDURE [dbo].[SUB_PN_Count] 
+	-- DECLARE
+	@ID varchar(10)--Inputted WO with or without leading zeros
+	,@iwo nvarchar(10)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+SELECT COUNT (DISTINCT PN) AS PN_COUNT 
+		,COUNT (DISTINCT WONO) AS WO_COUNT
+FROM Interactive.dbo.sub_request
+WHERE
+@ID = REQUEST_ID 
+
+END

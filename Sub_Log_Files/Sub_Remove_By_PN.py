@@ -49,19 +49,20 @@ def Sub_Remove_By_PN(Sub_Request_V,Book,Report_Text,Main_Tree,Sub_Options_V,Sub_
 
         def sub_submit(e1,e2):
             EXE_STRING ="EXEC Interactive.dbo.SUB_Remove_By_PN @ID=?, @iPN=?, @iwo=?"
-            EXE_COUNT_STRING ="EXEC Interactive.dbo.SUB_PN_Count @ID=?"
+            EXE_COUNT_STRING ="EXEC Interactive.dbo.SUB_PN_Count @ID=?, @iwo=?"
 
             WO = e1.get()
             PN = e2.get()
 
             try:
                 #check if this is the last PN attached to the sub request
-                c.execute(EXE_COUNT_STRING,ID)
+                c.execute(EXE_COUNT_STRING,ID,WO)
                 countdata = c.fetchall()
                 countarray = np.array(countdata)
-                count = countarray[0,0]
+                pncount = countarray[0,0]
+                wocount = countarray[0,1]
                 #if this is the last PN, confirm that the user wants to delete it
-                if count == 1:
+                if pncount == 1 and wocount == 1:
                     Delete_Confirm = messagebox.askquestion("Delete?", "This is the last PN attached and will delete the request, continue?", icon='warning')
                     if Delete_Confirm == 'yes':
 
