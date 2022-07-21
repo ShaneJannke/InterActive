@@ -1,0 +1,75 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[SUB_Remove_By_PN]    Script Date: 7/21/2022 3:22:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		NS
+-- Create date: 2/5/2021
+-- Description:	Procedure to remove PN's from the Sub Request Log
+-- =============================================
+ALTER PROCEDURE [dbo].[SUB_Remove_By_PN] 
+	-- DECLARE
+	@ID varchar(10)--Inputted WO with or without leading zeros
+	,@iPN varchar(25) --Component that could use a sub
+	,@iwo varchar(10)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+
+
+
+
+DECLARE @ErrorMessage NVARCHAR(max)
+DECLARE @ErrorSeverity INT
+DECLARE @ErrorState INT
+
+BEGIN TRY
+BEGIN TRANSACTION
+
+DELETE
+
+FROM
+	Interactive.dbo.sub_request
+WHERE 
+	REQUEST_ID = @ID
+AND
+	PN = @iPN
+AND
+	NOT _STATUS = 'Initaited'
+AND
+	NOT _STATUS = 'Closed'
+AND
+	WONO = @iwo
+
+
+IF @@ROWCOUNT = 0
+BEGIN
+       RAISERROR('No results came from Alternate Request: %s and part number: %s, please verify that the correct values have been entered and re-enter the your request.',-- Message text.
+              16, -- Severity.
+              1,-- State.
+              @ID, --First argument (replace first %s with %i if variable is int)
+			  @iPN --second argument (replace second %s with %i if variable is int)
+        );    
+END  
+
+IF @@TRANCOUNT>0
+       COMMIT
+END TRY
+BEGIN CATCH
+       IF @@TRANCOUNT>0
+              ROLLBACK
+       SELECT @ErrorMessage = ERROR_MESSAGE(),
+    @ErrorSeverity = ERROR_SEVERITY(),
+    @ErrorState = ERROR_STATE();
+       RAISERROR (@ErrorMessage, -- Message text.
+            @ErrorSeverity, -- Severity.
+            @ErrorState -- State.
+            );
+END CATCH
+
+
+END
