@@ -30,7 +30,7 @@ from Get_User_Dept import Get_User_Dept
 
 #Runs the init file in each of these folders, open init files to see what files are being imported
 import Main_Trees
-import Task_Manager
+#import Task_Manager
 import Sub_Log_Files
 import Materials
 import Feedback
@@ -133,17 +133,17 @@ class InterActive():
         self.WO_SN_V.set(0000)  
 
         #list of status' to sort the Task Manager by
-        self.TM_Options = ['Select Initiated','Select Open','Select In Progress','Select Pending Review','Select Rejected','Select Closed']
-        self.TM_Options_V = StringVar()
-        self.TM_Options_V.set(self.TM_Options[0])
+        #self.TM_Options = ['Select Initiated','Select Open','Select In Progress','Select Pending Review','Select Rejected','Select Closed']
+        #self.TM_Options_V = StringVar()
+        #self.TM_Options_V.set(self.TM_Options[0])
 
         '''
         6/8/22 SJ
         Creates a list of ME users for the Task Manager
         '''
-        ME_names = Task_Manager.TM_Get_Names()
-        self.ME_clicked = StringVar()
-        self.ME_clicked.set(ME_names[0])
+        #ME_names = Task_Manager.TM_Get_Names()
+        #self.ME_clicked = StringVar()
+        #self.ME_clicked.set(ME_names[0])
         '''
         6/8/22 SJ
         Creates a list of Users for the Sub Log
@@ -207,7 +207,7 @@ class InterActive():
         
         self.Sub_Log_B = Button(self.frame0, text = "Sub Log", command = lambda: self.Sub_Log(root))
 
-        self.Task_Manager_B = Button(self.frame0, text = "Task Manager", command = partial(Task_Manager.TM_Start, self.Main_Tree, self.Book, self.frame6, self.Report_Text,self.Sub_Request_V, root, self.TM_Options_V,self.ME_clicked))
+        self.Task_Manager_B = Button(self.frame0)
 
         self.frame0_Separator_Label_1 = Label(self.frame0, text = "Programs", font = "arial 10 bold")
         self.frame0_Separator_1 = ttk.Separator(self.frame0, orient = VERTICAL)
@@ -422,58 +422,65 @@ class InterActive():
         self.frame5_Separator_Label_8 = Label(self.frame5, text = "BOM Search", font = "arial 10 bold")
         self.frame5_Separator_8 = ttk.Separator(self.frame5, orient = VERTICAL)
         #------------------------------------------------------------------------------------------------------------------------------------------------
-        #Frame 6 Widgets
+       #Frame 6 Widgets
         #search by assembly or rev
-        self.New_TM_Request_B = Button(self.frame6, text="New Request", command=partial(Task_Manager.TM_New_Request,self.Main_Tree,self.Sub_Request_V,self.Report_Text,self.Book))
+        self.TM_Search_Assy_B = Button(self.frame6, text = "Search Assembly")
 
-        self.TM_WO_Text_Label = Label(self.frame6,text = "Request #:", font = "arial 10")
-        self.TM_WO_Text = Label(self.frame6, textvariable = self.Sub_Request_V, font = "arial 10")
+        #search by work order number
+        self.TM_Search_WO_B = Button(self.frame6, text = "Search WO#")
 
-        self.frame6_Separator_Label_1 = Label(self.frame6, text = "Current Request", font = "arial 10 bold")
+        self.frame6_Separator_Label_1 = Label(self.frame6, text = "Current PCBA", font = "arial 10 bold")
         self.frame6_Separator_1 = ttk.Separator(self.frame6, orient = VERTICAL)
-
-        self.TM_Options_Menu = OptionMenu(self.frame6, self.TM_Options_V, *self.TM_Options)
-        self.TM_Options_V.trace("w",self.callback5)
         
-        self.frame6_Separator_Label_2 = Label(self.frame6, text = "Status", font = "arial 10 bold")
+        #add a note to the selected work order
+        self.TM_Edit_Note_B = Button(self.frame6, text = "Edit Notes")
+
+        #view notes for selected work order
+        self.TM_View_Note_B = Button(self.frame6, text = "View Notes")
+        
+        self.frame6_Separator_Label_2 = Label(self.frame6, text = "Search", font = "arial 10 bold")
         self.frame6_Separator_2 = ttk.Separator(self.frame6, orient = VERTICAL)
 
-        self.TM_Add_Assembly_B = Button(self.frame6, text="Add Assembly", command=partial(Task_Manager.TM_Add_Assembly,self.Report_Text,self.Sub_Request_V,self.Main_Tree,self.Book))
+        #view ECN/Doc Request info
+        self.TM_Doc_View_B = Button(self.frame6, text = "View ECN/Doc Req ID")
 
-        self.TM_Change_Status_B = Button(self.frame6, text="Change Status", command=partial(Task_Manager.TM_Change_Status,self.Sub_Request_V,self.Report_Text,self.Main_Tree,self.Book))
+        #insert ECN/ Doc Request info for selected work order
+        self.TM_Doc_Insert_B = Button(self.frame6, text = "Insert ECN/Doc Req ID")
 
-        self.TM_Change_Log_B = Button(self.frame6, text="Change Log", command=partial(Task_Manager.TM_Get_Change_Log,self.Sub_Request_V,self.Report_Text))
+        #creates a pop-up showing the full production feedback
+        self.TM_Feedback_B = Button(self.frame6, text = "Production Feedback")
         
-        self.frame6_Separator_Label_3 = Label(self.frame6, text = "Changes", font = "arial 10 bold")
+        self.frame6_Separator_Label_3 = Label(self.frame6, text = "Notes", font = "arial 10 bold")
         self.frame6_Separator_3 = ttk.Separator(self.frame6, orient = VERTICAL)
-
+            
         #create a dropdown list of users in ME
-        self.TM_Users_Drop = OptionMenu(self.frame6, self.ME_clicked, *ME_names)
-        self.ME_clicked.trace("w",self.callback5)
-                       
+        #self.TM_Users_Drop = OptionMenu(self.frame6, self.ME_clicked, *ME_names)
+        #self.ME_clicked.trace("w",self.callback5)
+
         #set selected user from dropdown responsible for selected work order
-        self.TM_Set_Resp_B = Button(self.frame6, text="Set Resp Party",command=partial(Task_Manager.TM_Set_Resp_Party,self.Sub_Request_V,self.Main_Tree,self.Book,self.Report_Text,self.ME_clicked))
+        self.TM_Set_Resp_B = Button(self.frame6, text="Set Resp Party")
 
         #get responsible user for selected work order
-        self.TM_Get_Resp_B = Button(self.frame6, text="Get Resp Party",command=partial(Task_Manager.TM_Get_Resp_Party,self.Sub_Request_V,self.Report_Text))
+        self.TM_Get_Resp_B = Button(self.frame6, text="Get Resp Party")
 
-        self.frame6_Separator_Label_4 = Label(self.frame6, text = "Responsible Party", font = "arial 10 bold") 
+        self.frame6_Separator_Label_4 = Label(self.frame6, text = "Other Info", font = "arial 10 bold") 
         self.frame6_Separator_4 = ttk.Separator(self.frame6, orient = VERTICAL)
 
-        self.TM_View_Request_B = Button(self.frame6, text="View Request", command=partial(Task_Manager.TM_View_Request,None,self.Main_Tree,self.Book,self.Sub_Request_V,self.Report_Text))
+        '''
+        6/9/22 SJ
+        displays the selected work order, similar to Sub Log
+        '''
+        self.TM_WO_Text_Label = Label(self.frame6,text = "PCBA #:", font = "arial 10")
+        self.TM_WO_Text = Label(self.frame6, textvariable = self.Sub_Request_V, font = "arial 10")
 
-        self.TM_Search_Assy_B = Button(self.frame6, text="Search Assy", command=partial(Task_Manager.TM_Search_Assy,self.Main_Tree,self.Book,self.Sub_Request_V,self.Report_Text))
-
-        self.frame6_Separator_Label_5 = Label(self.frame6, text = "Search", font = "arial 10 bold")
+        self.frame6_Separator_Label_5 = Label(self.frame6, text = "Responsible Party", font = "arial 10 bold")
         self.frame6_Separator_5 = ttk.Separator(self.frame6, orient = VERTICAL)
 
-        #add a note to the selected work order
-        self.TM_Edit_Note_B = Button(self.frame6, text = "Edit Notes", command = partial(Task_Manager.TM_Edit_Note, self.Sub_Request_V,self.Report_Text,self.Main_Tree,self.Book))
-
-        self.TM_View_Note_B = Button(self.frame6, text= "View Notes", command = partial(Task_Manager.TM_View_Note,self.Sub_Request_V,self.Report_Text))
-
-        self.frame6_Separator_Label_6 = Label(self.frame6, text = "Notes", font = "arial 10 bold")
-        self.frame6_Separator_6 = ttk.Separator(self.frame6, orient = VERTICAL)
+        self.New_TM_Request_B = Button(self.frame6, text="New Request")
+        
+        self.TM_Add_Assembly_B = Button(self.frame6, text="Add Assembly")
+       
+        self.TM_View_Request_B = Button(self.frame6, text="View Request")
         #------------------------------------------------------------------------------------------------------------------------------------------------
         #Frame 7 Widgets
         self.Kit_Label_B = Button(self.frame7, text="Kitting Label",command=partial(Materials.KittingLabel,self.Report_Text,self.Book))
@@ -538,7 +545,7 @@ class InterActive():
 
         self.Label_Printing_B.grid(row = 0, column = 1, padx = 5, pady = 5, ipadx=5)
 
-        self.Task_Manager_B.grid(row = 1, column = 1)
+        #self.Task_Manager_B.grid(row = 1, column = 1)
         
         self.frame0_Separator_Label_1.grid(row = 2, column = 0, columnspan=2)
         self.frame0_Separator_1.grid(row = 0, column = 2, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
@@ -729,50 +736,49 @@ class InterActive():
         self.frame5_Separator_8.grid(row = 0, column = 20, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
         #---------------------------------------------------------------------------------------------------------------------------------------------
         #Frame 6 Task Manager/Task Manager
-        self.New_TM_Request_B.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
-
-        self.TM_WO_Text_Label.grid(row = 1, column = 0)
-        self.TM_WO_Text.grid(row = 1, column = 1)
+        self.TM_WO_Text_Label.grid(row = 0, column = 0, rowspan=2)
+        self.TM_WO_Text.grid(row = 0, column = 1,rowspan=2)
         
         self.frame6_Separator_Label_1.grid(row = 2, column = 0, columnspan=2)
         self.frame6_Separator_1.grid(row = 0, column = 2, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
 
-        self.TM_Options_Menu.grid(row=0, column=3)
+        self.TM_Search_Assy_B.grid(row = 0, column = 3, padx = 5, pady = 5)
 
-        self.frame6_Separator_Label_2.grid(row = 2, column = 3, padx=5)
+        self.TM_Search_WO_B.grid(row = 1, column = 3, padx=5, pady=5, ipadx= 5)
+
+        self.frame6_Separator_Label_2.grid(row = 2, column = 3)
         self.frame6_Separator_2.grid(row = 0, column = 4, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
 
-        self.TM_Add_Assembly_B.grid(row=0, column=5, padx=5, pady=5)
+        self.TM_Edit_Note_B.grid(row = 0, column = 5)
 
-        self.TM_Change_Status_B.grid(row=1, column=5)
-
-        self.TM_Change_Log_B.grid(row=0, column=6, padx=5)
+        self.TM_View_Note_B.grid(row = 1, column = 5)
 
         self.frame6_Separator_Label_3.grid(row = 2, column = 5, columnspan=2)
-        self.frame6_Separator_3.grid(row = 0, column = 7, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
+        self.frame6_Separator_3.grid(row = 0, column = 6, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
 
-        self.TM_Users_Drop.grid(row=0, column=8, padx=5, pady=5)
+        self.TM_Doc_View_B.grid(row = 1, column = 7, padx=5, ipadx= 1)
 
-        self.TM_Set_Resp_B.grid(row=0, column=9, padx=5, pady=5)
+        self.TM_Doc_Insert_B.grid(row = 0, column = 7)
 
-        self.TM_Get_Resp_B.grid(row=1, column=9, padx=5, pady=5)
+        self.TM_Feedback_B.grid(row = 0, column = 8, padx=5)
 
-        self.frame6_Separator_Label_4.grid(row = 2, column = 8, columnspan=2)
-        self.frame6_Separator_4.grid(row = 0, column = 10, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
+        self.frame6_Separator_Label_4.grid(row = 2, column = 7, columnspan=2)
+        self.frame6_Separator_4.grid(row = 0, column = 9, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
 
-        self.TM_View_Request_B.grid(row=0, column=11, padx=5, pady=5)
+        #self.TM_Users_Drop.grid(row=0, column=10, padx=5, pady=5)
 
-        self.TM_Search_Assy_B.grid(row = 1, column = 11, padx = 5, pady = 5)
+        self.TM_Set_Resp_B.grid(row=0, column=11, padx=5, pady=5)
 
-        self.frame6_Separator_Label_5.grid(row = 2, column = 11, columnspan=2)
+        self.TM_Get_Resp_B.grid(row=1, column=11, padx=5, pady=5)
+
+        self.frame6_Separator_Label_5.grid(row = 2, column = 10, columnspan=2)
         self.frame6_Separator_5.grid(row = 0, column = 12, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
 
-        self.TM_Edit_Note_B.grid(row = 0, column = 13)
+        self.New_TM_Request_B.grid(row=0, column=13, padx=5, pady=5)
 
-        self.TM_View_Note_B.grid(row=1, column=13)
+        self.TM_Add_Assembly_B.grid(row=1, column=13, padx=5, pady=5)
 
-        self.frame6_Separator_Label_6.grid(row = 2, column = 13, columnspan=2)
-        self.frame6_Separator_6.grid(row = 0, column = 14, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
+        self.TM_View_Request_B.grid(row=0, column=14, padx=5, pady=5)
 
         #----------------------------------------------------------------------------------------------------------------------------------------------
         #Frame 7 Sub Log/CSA
