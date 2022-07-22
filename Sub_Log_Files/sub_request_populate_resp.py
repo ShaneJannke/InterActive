@@ -26,7 +26,7 @@ def sub_request_populate_resp(Main_Tree,Sub_clicked,Report_Text,Sub_Options_V):
     '''
     status = Sub_Options_V.get().replace("Select ", "")
     
-    EXE_STRING_user ="EXEC Interactive.dbo.SUB_By_Resp_User @User=?, @status=?"
+    EXE_STRING_user ="EXEC Interactive.dbo.SUB_By_Status @User=?, @status=?"
     
     #Trap error if raised
     try:

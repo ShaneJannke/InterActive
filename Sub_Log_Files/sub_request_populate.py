@@ -28,25 +28,9 @@ def sub_request_populate(Main_Tree,Sub_Options_V,Report_Text,Sub_clicked):
     
     #Trap error if raised
     try:
-        result = Sub_Options_V.get()
-        if result == "Select Pending SC":
-            option_1 = "Pending SC"
-        elif result == "Select Closed":
-            option_1 = "Closed"
-        elif result == "Select Pending ME":
-            option_1 = "Pending ME"
-        elif result == "Select Pending CAS":
-            option_1 = "Pending CAS"
-        elif result == "Select Pending Customer":
-            option_1 = "Pending Customer"
-        elif result == "Select Customer Responded":
-            option_1 = "Customer Responded"
-        elif result == "Select PO Needed":
-            option_1 = "PO Needed"
-        else:
-            option_1 = "Initiated"
+        result = Sub_Options_V.get().replace("Select ", "")
             
-        c.execute(EXE_STRING,option_1,User)
+        c.execute(EXE_STRING,result,User)
         data = c.fetchall()
         np_data = np.array(data)
         

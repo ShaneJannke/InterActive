@@ -1,0 +1,63 @@
+USE [Interactive]
+GO
+/****** Object:  StoredProcedure [dbo].[SUB_By_Status]    Script Date: 7/22/2022 8:30:39 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		NS
+-- Create date: 2/8/2022
+-- Description:	Procedure to view Sub Request with shared Status's
+-- =============================================
+ALTER PROCEDURE [dbo].[SUB_By_Status] 
+	-- DECLARE
+	@status varchar(20),
+	@User varchar(20)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+IF @status = 'All'
+
+IF @User = 'All'
+SELECT *
+FROM Interactive.dbo.sub_request
+
+	ORDER BY 
+	LEN(REQUEST_ID), REQUEST_ID
+ELSE
+SELECT *
+FROM Interactive.dbo.sub_request
+WHERE
+	(Resp_SC = @User
+	OR
+	Resp_ME = @User
+	OR
+	Resp_CAS = @User)
+ORDER BY 
+	LEN(REQUEST_ID), REQUEST_ID
+
+ELSE
+
+IF @User = 'All'
+SELECT *
+FROM Interactive.dbo.sub_request
+WHERE
+	_STATUS = @status
+	ORDER BY 
+	LEN(REQUEST_ID), REQUEST_ID
+ELSE
+SELECT *
+FROM Interactive.dbo.sub_request
+WHERE
+	_STATUS = @status
+	AND
+	(Resp_SC = @User
+	OR
+	Resp_ME = @User
+	OR
+	Resp_CAS = @User)
+ORDER BY 
+	LEN(REQUEST_ID), REQUEST_ID
+END
