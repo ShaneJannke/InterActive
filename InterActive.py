@@ -118,7 +118,7 @@ class InterActive():
         '''
 
         #list of status' to sort the sublog by
-        self.Sub_Options = ['Select Initiated','Select Pending SC','Select Pending ME','Select Pending CAS','Select Pending Customer','Select Customer Responded',"Select PO Needed",'Select Closed']
+        self.Sub_Options = ['Select Initiated','Select Pending SC','Select Pending ME','Select Pending CAS','Select Pending Customer','Select Customer Responded',"Select PO Needed",'Select Closed','Select All']
         self.Sub_Options_V = StringVar()
         self.Sub_Options_V.set(self.Sub_Options[0])
 
