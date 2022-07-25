@@ -264,6 +264,12 @@ class InterActive():
 
         self.frame1_Separator_Label_4 = Label(self.frame1, text = "SN/Tote Control", font = "arial 10 bold")
         self.frame1_Separator_4 = ttk.Separator(self.frame1, orient = VERTICAL)
+
+        self.SN_Info_B = Button(self.frame1, text = "View 1 SN", command = self.SN_Info)
+
+        self.frame1_Separator_Label_5 = Label(self.frame1, text = "View SN", font = "arial 10 bold")
+        self.frame1_Separator_5 = ttk.Separator(self.frame1, orient = VERTICAL) 
+
         #------------------------------------------------------------------------------------------------------------------------------------------------
         #Frame 2 Widgets Ultratec/ME
         '''
@@ -298,11 +304,6 @@ class InterActive():
         
         self.frame2_Separator_Label_2 = Label(self.frame2, text = "SN Control", font = "arial 10 bold")
         self.frame2_Separator_2 = ttk.Separator(self.frame2, orient = VERTICAL)
-        
-        self.SN_Info_B = Button(self.frame2, text = "View 1 SN", command = self.SN_Info) 
-        
-        self.frame2_Separator_Label_3 = Label(self.frame2, text = "SN Lookup", font = "arial 10 bold")
-        self.frame2_Separator_3 = ttk.Separator(self.frame2, orient = VERTICAL)
         
         self.W_SN_To_Scrap_B = Button(self.frame2, text = "Scrap SN", command = self.W_SN_To_Scrap)
 
@@ -598,6 +599,12 @@ class InterActive():
 
         self.frame1_Separator_Label_4.grid(row = 2, column = 11)
         self.frame1_Separator_4.grid(row = 0, column = 12, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
+
+        #added rowspan to center the button
+        self.SN_Info_B.grid(row = 0, column = 13, rowspan=2)
+
+        self.frame1_Separator_Label_5.grid(row = 2, column = 13)
+        self.frame1_Separator_5.grid(row = 0, column = 14, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
         #---------------------------------------------------------------------------------------------------------------------------------------------
         #Frame2 aka Ultratec/ME
         self.WO_Options_Menu.grid(row = 0, column = 0, padx = 5, pady = 5)
@@ -623,12 +630,6 @@ class InterActive():
 
         self.frame2_Separator_Label_2.grid(row = 2, column = 4, columnspan=2)
         self.frame2_Separator_2.grid(row = 0, column = 6, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
-        
-        #added rowspan to center the button
-        self.SN_Info_B.grid(row = 0, column = 7, rowspan=2)
-
-        self.frame2_Separator_Label_3.grid(row = 2, column = 7)
-        self.frame2_Separator_3.grid(row = 0, column = 8, sticky = "ns", rowspan = 3, padx = 5, pady = 5)
 
         self.W_SN_To_Scrap_B.grid(row = 0, column = 9)
 
