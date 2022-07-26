@@ -828,11 +828,11 @@ class InterActive():
         self.Password = simpledialog.askstring("Password", "Enter the Password", show='*')
         
         self.DEPT.set(None)
-        if self.Password == "METest":
+        if self.Password == "MEp4ss":
             self.DEPT.set('ME')
-        elif self.Password == "SubLogTest":
+        elif self.Password == "SUBl0g":
             self.DEPT.set("SubLog")
-        elif self.Password == "ProductionTest":
+        elif self.Password == "PAE":
             self.DEPT.set("Production")
         elif self.Password == None:
             root.destroy()
