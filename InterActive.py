@@ -159,7 +159,7 @@ class InterActive():
         6/10/22 SJ
         commenting this out as it was causing errors for Joe Roth - can look into another method to achieve this later
         '''
-        #self.DEPT = Get_User_Dept()
+        self.DEPT = StringVar()
        #-------------------------------------------------------------------------------------------------------------------------------------- 
         #Report Frame Widgets
         '''
@@ -494,7 +494,7 @@ class InterActive():
                     "Trusted_Connection=yes;")
 
         self.Construct() 
-        #self.PasswordCheck(root)
+        self.PasswordCheck(root)
         return
 
     def Construct(self):
@@ -819,27 +819,27 @@ class InterActive():
         self.Book.hide(7)
 
         return
-    '''
+
     def PasswordCheck(self, root):
 
-        6/10/22 SJ
-        Add a password check to continue into interactive
+        #6/10/22 SJ
+        #Add a password check to continue into interactive
 
         self.Password = simpledialog.askstring("Password", "Enter the Password", show='*')
         
-        self.DEPT = "None"
-        if self.Password == "METest":
-            self.DEPT = 'ME'
-        elif self.Password == "SubLogTest":
-            self.DEPT = "SubLog"
-        elif self.Password == "ProductionTest":
-            self.DEPT = "Production"
+        self.DEPT.set(None)
+        if self.Password == "MEp4ss":
+            self.DEPT.set('ME')
+        elif self.Password == "SUBl0g":
+            self.DEPT.set("SubLog")
+        elif self.Password == "PAE":
+            self.DEPT.set("Production")
         elif self.Password == None:
             root.destroy()
         else:
             messagebox.showerror("Password", "Incorrect Password, try again!")
             self.PasswordCheck(root)
-    '''
+
     #Create a button function "Scan Part" in frame1
     def SN_To_Tote(self):
         while True:
@@ -1612,51 +1612,79 @@ class InterActive():
     
     def Ultratec(self, root):
 
-        '''
-        6/7/22 SJ
-        Check the department of the logged in user to see if have permission to view this Program -- See Get_User_Dept()
+        #6/7/22 SJ
+        #Check the department of the logged in user to see if have permission to view this Program -- See Get_User_Dept()
         
-        6/10/22 SJ
-        commenting this out due to an error
+        #6/10/22 SJ
+        #commenting this out due to an error
 
-        if self.DEPT != "ME" and self.DEPT != "Operations" and self.DEPT != "Quality" and self.DEPT != "Production":
-            self.Report_Text.configure(state = NORMAL)
-            self.Report_Text.insert(END, "You Do Not Have Access to This Program" + "\n")
-            self.Report_Text.configure(state = DISABLED)
-            self.Report_Text.see("end")
+        if self.DEPT.get() == "Production":
+            '''    
+            6/7/22 SJ
+            Update title to show which program in Interactive you have selected.
+            '''
+            root.title('Inter-Active 1.8.2/Ultratec')
+
+            self.Book.hide(4)
+            self.Book.hide(5) 
+            self.Book.hide(6)
+            self.Book.hide(7)
+            self.Book.add(self.frame1, text=" Production ")
+            '''
+            6/9/22 SJ
+            Selects the first tab of Ultratec when the button is pressed
+            '''
+            self.Book.select(1)
+            #Only show the ME tab of ultratec to ME, Operations, and Quality - commented out due to errors
+            #if self.DEPT.get() == "ME" or self.DEPT.get() == "Operations" or self.DEPT.get() == "Quality":
+            self.Book.add(self.frame3, text = " Materials ")
+            '''
+            6/7/22 SJ
+            Rearranged Main_Tree_0 to be next to Clear_Main_Tree
+            '''
+            Main_Trees.Clear_Main_Tree(self.Main_Tree)
+            Main_Trees.Main_Tree_0(self.Main_Tree)
+
+            self.WO_SN_Count_V.set(0)
+            self.WO_SN_V.set(0)
+            
+        elif self.DEPT.get() == "ME":
+
+            '''    
+            6/7/22 SJ
+            Update title to show which program in Interactive you have selected.
+            '''
+            root.title('Inter-Active 1.8.2/Ultratec')
+
+            self.Book.hide(4)
+            self.Book.hide(5) 
+            self.Book.hide(6)
+            self.Book.hide(7)
+            self.Book.add(self.frame1, text=" Production ")
+            '''
+            6/9/22 SJ
+            Selects the first tab of Ultratec when the button is pressed
+            '''
+            self.Book.select(1)
+            #Only show the ME tab of ultratec to ME, Operations, and Quality - commented out due to errors
+            #if self.DEPT.get() == "ME" or self.DEPT.get() == "Operations" or self.DEPT.get() == "Quality":
+            self.Book.add(self.frame2, text = " ME ")
+            self.Book.add(self.frame3, text = " Materials ")
+            '''
+            6/7/22 SJ
+            Rearranged Main_Tree_0 to be next to Clear_Main_Tree
+            '''
+            Main_Trees.Clear_Main_Tree(self.Main_Tree)
+            Main_Trees.Main_Tree_0(self.Main_Tree)
+
+            self.WO_SN_Count_V.set(0)
+            self.WO_SN_V.set(0)
 
         else:
-        '''
-
-        '''    
-        6/7/22 SJ
-        Update title to show which program in Interactive you have selected.
-        '''
-        root.title('Inter-Active 1.8.2/Ultratec')
-
-        self.Book.hide(4)
-        self.Book.hide(5) 
-        self.Book.hide(6)
-        self.Book.hide(7)
-        self.Book.add(self.frame1, text=" Production ")
-        '''
-        6/9/22 SJ
-        Selects the first tab of Ultratec when the button is pressed
-        '''
-        self.Book.select(1)
-        #Only show the ME tab of ultratec to ME, Operations, and Quality - commented out due to errors
-        #if self.DEPT == "ME" or self.DEPT == "Operations" or self.DEPT == "Quality":
-        self.Book.add(self.frame2, text = " ME ")
-        self.Book.add(self.frame3, text = " Materials ")
-        '''
-        6/7/22 SJ
-        Rearranged Main_Tree_0 to be next to Clear_Main_Tree
-        '''
-        Main_Trees.Clear_Main_Tree(self.Main_Tree)
-        Main_Trees.Main_Tree_0(self.Main_Tree)
-
-        self.WO_SN_Count_V.set(0)
-        self.WO_SN_V.set(0)
+            self.Report_Text.configure(state = NORMAL)
+            self.Report_Text.insert(END, self.DEPT.get() + " Does Not Have Access to This Program" + "\n")
+            self.Report_Text.configure(state = DISABLED)
+            self.Report_Text.see("end")
             
         return
     
@@ -1667,98 +1695,97 @@ class InterActive():
         
         6/10/22 SJ
         commenting this out due to errors
+        '''
 
-        if self.DEPT != "ME" and self.DEPT != "Operations" and self.DEPT != "Quality" and self.DEPT != "Production":
+        if self.DEPT.get() != "ME" and self.DEPT.get() != "Production":
             self.Report_Text.configure(state = NORMAL)
-            self.Report_Text.insert(END, "You Do Not Have Access to This Program" + "\n")
+            self.Report_Text.insert(END, self.DEPT.get() + " Does Not Have Access to This Program" + "\n")
             self.Report_Text.configure(state = DISABLED)
             self.Report_Text.see("end")
         else:
-        '''
 
-        '''
-        6/7/22 SJ
-        Update title to show which program in Interactive you have selected.
-        '''
-        root.title('Inter-Active 1.8.2/Materials')
-
-        self.Book.hide(1)
-        self.Book.hide(2)
-        self.Book.hide(3)
-        self.Book.hide(5)
-        self.Book.hide(6)
-        #6/15/22 SJ changed from Materials to Label Printing
-        self.Book.add(self.frame4, text=" Label Printing ")
-        self.Book.add(self.frame7, text=" Kitting ")
-        '''
-        6/9/22 SJ
-        Automatically select the Materials tab when Label Printing button is pressed
-        '''
-        self.Book.select(4)
+        #6/7/22 SJ
+        #Update title to show which program in Interactive you have selected.
         
-        '''
-        6/7/22 SJ
-        Rearranged Main_Tree_0 to be next to Clear_Main_Tree
-        '''
-        Main_Trees.Clear_Main_Tree(self.Main_Tree)
-        Main_Trees.Main_Tree_0(self.Main_Tree)
+            root.title('Inter-Active 1.8.2/Materials')
 
-        self.WO_SN_Count_V.set(0)
-        self.WO_SN_V.set(0)
+            self.Book.hide(1)
+            self.Book.hide(2)
+            self.Book.hide(3)
+            self.Book.hide(5)
+            self.Book.hide(6)
+            #6/15/22 SJ changed from Materials to Label Printing
+            self.Book.add(self.frame4, text=" Label Printing ")
+            self.Book.add(self.frame7, text=" Kitting ")
+            '''
+            6/9/22 SJ
+            Automatically select the Materials tab when Label Printing button is pressed
+            '''
+            self.Book.select(4)
+            
+            '''
+            6/7/22 SJ
+            Rearranged Main_Tree_0 to be next to Clear_Main_Tree
+            '''
+            Main_Trees.Clear_Main_Tree(self.Main_Tree)
+            Main_Trees.Main_Tree_0(self.Main_Tree)
+
+            self.WO_SN_Count_V.set(0)
+            self.WO_SN_V.set(0)
             
         return
     
     def Sub_Log(self, root):
 
         self.Main_Tree.bind('<ButtonRelease-1>', partial(Sub_Log_Files.selectItem,self.Main_Tree,self.Sub_Request_V))
-        '''
-        6/7/22 SJ
-        Limit who can access this Program based on the department of the logged in User -- See Get_User_Dept()
 
-        6/10/22 SJ
-        commenting this out due to errors
+        #6/7/22 SJ
+        #Limit who can access this Program based on the department of the logged in User -- See Get_User_Dept()
+
+        #6/10/22 SJ
+        #commenting this out due to errors
         
-        if self.DEPT != "ME" and self.DEPT != "Operations" and self.DEPT != "Quality" and self.DEPT != "Supply Chain" and self.DEPT != "Customer Service":
+        if self.DEPT.get() != "ME" and self.DEPT.get() != "SubLog":
             self.Report_Text.configure(state = NORMAL)
-            self.Report_Text.insert(END, "You Do Not Have Access to This Program" + "\n")
+            self.Report_Text.insert(END, self.DEPT.get() + " Does Not Have Access to This Program" + "\n")
             self.Report_Text.configure(state = DISABLED)
             self.Report_Text.see("end")
         else:
-        '''
 
-        '''
-        6/7/22 SJ
-        Update title to show which program in Interactive you have selected.
-        '''
-        root.title('Inter-Active 1.8.2/Sub_Log')
+            '''
+            6/7/22 SJ
+            Update title to show which program in Interactive you have selected.
+            '''
+            root.title('Inter-Active 1.8.2/Sub_Log')
 
-        self.Book.hide(1)
-        self.Book.hide(2)
-        self.Book.hide(3)
-        self.Book.hide(4)
-        self.Book.hide(6)
-        self.Book.hide(7)
-        self.Book.add(self.frame5, text=" Supply Chain ")
-        #self.Book.add(self.frame6, text=" ME ")
-        #self.Book.add(self.frame7, text=" CAS ")
-        '''
-        6/9/22 SJ
-        Automatically select the Supply Chain tab when Sub Log button is pressed
-        '''
-        self.Book.select(5)
-        
-        '''
-        6/7/22 SJ
-        Moved Clear_Main_Tree to be after the variables
-        '''
-        self.WO_SN_Count_V.set(0)
-        self.WO_SN_V.set(0)
-        self.Sub_Request_V.set(None)
+            self.Book.hide(1)
+            self.Book.hide(2)
+            self.Book.hide(3)
+            self.Book.hide(4)
+            self.Book.hide(6)
+            self.Book.hide(7)
+            self.Book.add(self.frame5, text=" Supply Chain ")
+            #self.Book.add(self.frame6, text=" ME ")
+            #self.Book.add(self.frame7, text=" CAS ")
+            '''
+            6/9/22 SJ
+            Automatically select the Supply Chain tab when Sub Log button is pressed
+            '''
+            self.Book.select(5)
+            
+            '''
+            6/7/22 SJ
+            Moved Clear_Main_Tree to be after the variables
+            '''
+            self.WO_SN_Count_V.set(0)
+            self.WO_SN_V.set(0)
+            self.Sub_Request_V.set(None)
 
-        Main_Trees.Clear_Main_Tree(self.Main_Tree)
-        Sub_Log_Files.sub_request_populate(self.Main_Tree,self.Sub_Options_V,self.Report_Text,self.Sub_clicked)
+            Main_Trees.Clear_Main_Tree(self.Main_Tree)
+            Sub_Log_Files.sub_request_populate(self.Main_Tree,self.Sub_Options_V,self.Report_Text,self.Sub_clicked)
     
-        return         
+        return   
+
     #populates sub requests whenever a Sub_Options_V is selected
     def callback3(self,*args):
         Sub_Log_Files.sub_request_populate(self.Main_Tree,self.Sub_Options_V,self.Report_Text,self.Sub_clicked)
